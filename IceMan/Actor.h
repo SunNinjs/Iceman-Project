@@ -156,6 +156,7 @@ public:
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include <algorithm>
 
 class StudentWorld;
 
@@ -201,6 +202,8 @@ public:
 	// Move this actor to x,y if possible, and return true; otherwise,
 	// return false without moving.
 	bool moveToIfPossible(int x, int y);
+
+	bool moveToIfPossible2(int x, int y);
 private:
 	bool m_alive;
 	StudentWorld* m_world;
@@ -265,14 +268,65 @@ public:
 	virtual void addGold();
 	virtual bool huntsIceMan() const;
 
-	// Set state to having gien up protest
-	void setMustLeaveOilField();
+	// Moves a certain direction
+	bool regularMove(int x, int y, Direction dir);
 
-	// Set number of ticks until next move
-	void setTicksToNextMove();
+	// Make new direction
+	Direction newDirection();
+
+	enum State { LEAVE, HUNT };
+
+	// Sets State
+	void setState(State state) {
+		m_state = state;
+	}
+
+	State getState() {
+		return m_state;
+	}
+
+	// Sets wait ticks
+	void setTicks(int ticks) {
+		m_waitTicks = ticks;
+	}
+
+	int getTicks() {
+		return m_waitTicks;
+	}
+
+	// Setnumsquares
+	void setMovedir(int temp) {
+		m_numSquaresToMoveInDir = temp;
+	}
+
+	int getMovedir() {
+		return m_numSquaresToMoveInDir;
+	}
+
+	void setSinShout(int temp) {
+		m_ticksSinceShouted = temp;
+	}
+
+	int getSinShout() {
+		return m_ticksSinceShouted;
+	}
+
+	void setSinTurn(int temp) {
+		m_ticksSinceTurned = temp;
+	}
+
+	int getSinTurn() {
+		return m_ticksSinceTurned;
+	}
+
+	int getWaitTime() {
+		return std::max(0, m_levelWaitTicks);
+	}
+
 private:
-	int m_state;
+	State m_state;
 	int m_waitTicks;
+	int m_levelWaitTicks;
 	int m_ticksSinceShouted;
 	int m_ticksSinceTurned;
 	int m_numSquaresToMoveInDir;
@@ -282,17 +336,17 @@ private:
 class RegularProtester : public Protester
 {
 public:
-	//RegularProtester(StudentWorld* world, int startX, int startY, int imageID);
-	//virtual void move();
-	//virtual void addGold();
+	RegularProtester(StudentWorld* world, int startX, int startY, int imageID);
+	virtual void move();
+	virtual void addGold();
 };
 
 class HardcoreProtester : public Protester
 {
 public:
-	//HardcoreProtester(StudentWorld* world, int startX, int startY, int imageID);
-	//virtual void move();
-	//virtual void addGold();
+	HardcoreProtester(StudentWorld* world, int startX, int startY, int imageID);
+	virtual void move();
+	virtual void addGold();
 };
 
 class Ice : public Actor
